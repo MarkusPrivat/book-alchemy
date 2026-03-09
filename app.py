@@ -3,7 +3,7 @@ from datetime import date
 
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import inspect
+from sqlalchemy import inspect, select
 
 from data.data_models import db, Author, Book
 
@@ -49,6 +49,17 @@ def add_author():
 
         except ValueError:
             return "Invalid date format received. Please use YYYY-MM-DD.", 400
+
+
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+    if request.method == 'GET':
+        authors = db.session.execute(select(Author).order_by(Author.name)).scalars().all()
+        return render_template('add_book.html', authors=authors) #TODO: Template erweitern
+
+    if request.method == 'POST':
+        #TODO: POST Methode umsetzen
+        pass
 
 
 def init_db():
