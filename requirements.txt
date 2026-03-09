@@ -1,2 +1,5 @@
 sqlalchemy
 pylint
+flask
+flask_sqlalchemy
+jinja2
