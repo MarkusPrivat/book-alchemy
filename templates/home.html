@@ -8,27 +8,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Library</h1>
-    <form action="/" method="GET" style="margin-bottom: 20px;">
-    <select name="sort" onchange="this.form.submit()">
-        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
-        <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Sort by Author</option>
-    </select>
-</form>
+<h1>Library</h1>
+<div class="search-sort-bar">
+    <form action="/" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="Search..." value="{{ request.args.get('q', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <form action="/" method="GET" class="sort-form">
+        <input type="hidden" name="q" value="{{ request.args.get('q', '') }}">
+        <select name="sort" onchange="this.form.submit()">
+            <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+            <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Sort by Author</option>
+        </select>
+    </form>
+</div>
+{% if books %}
     <div class="book-grid">
         {% for book in books %}
-        <div class="book-card">
-            <div class="book-card-img">
-                <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg" alt="Cover">
+            <div class="book-card">
+                <div class="book-card-img">
+                    <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg" alt="Cover">
+                </div>
+                <div class="book-card-info">
+                    <h2>{{ book.title }}</h2>
+                    <p>Author: {{ book.author.name }}</p>
+                    <p>Year: {{ book.publication_year }}</p>
+                    <p>ISBN: {{ book.isbn }}</p>
+                </div>
             </div>
-            <div class="book-card-info">
-                <h2>{{ book.title }}</h2>
-                <p>Author: {{ book.author.name }}</p>
-                <p>Year: {{ book.publication_year }}</p>
-                <p>ISBN: {{ book.isbn }}</p>
-            </div>
-        </div>
         {% endfor %}
     </div>
+{% else %}
+    <div class="no-results">
+        <p>Keine Bücher gefunden, die deinen Suchkriterien entsprechen.</p>
+    </div>
+{% endif %}
 </body>
 </html>

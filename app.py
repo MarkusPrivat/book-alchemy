@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import date
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, select
 from sqlalchemy.exc import IntegrityError
@@ -21,15 +21,19 @@ db.init_app(app)
 
 @app.route('/', methods=['GET'])
 def home():
+    search_query = request.args.get('q', '')
     sort_by = request.args.get('sort', 'title')
+
+    query = select(Book)
+
+    if search_query:
+        query = query.filter(Book.title.ilike(f"%{search_query}%"))
     if sort_by == 'author':
-        books = db.session.execute(
-            select(Book).join(Author).order_by(Author.name)
-        ).scalars().all()
+        query = query.join(Author).order_by(Author.name)
     else:
-        books = db.session.execute(
-            select(Book).order_by(Book.title)
-        ).scalars().all()
+        query = query.order_by(Book.title)
+
+    books = db.session.execute(query).scalars().all()
 
     return render_template('home.html', books=books, sort_by=sort_by)
 
