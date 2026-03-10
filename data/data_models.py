@@ -10,6 +10,15 @@ db = SQLAlchemy()
 class Author(db.Model):
     """
     Represents an author in the database.
+
+    Attributes:
+        id (int): Primary key.
+        name (str): The name of the author.
+        birth_date (date): Author's date of birth.
+        date_of_death (date, optional): Author's date of death, if applicable.
+        books (list): A list of Book objects associated with this author.
+                      Uses a cascade configuration to automatically handle
+                      related objects during deletion.
     """
     __tablename__ = "authors"
 
@@ -42,7 +51,15 @@ class Author(db.Model):
 
 class Book(db.Model):
     """
-    Represents a book in the database
+    Represents a book in the database.
+
+    Attributes:
+        id (int): Primary key.
+        isbn (str): Unique International Standard Book Number.
+        title (str): Title of the book.
+        publication_year (int): Year of publication, constrained between 0 and 2100.
+        author_id (int): Foreign key referencing the associated Author.
+        author (Author): Relationship object to the parent Author instance.
     """
     __tablename__ = "books"
 

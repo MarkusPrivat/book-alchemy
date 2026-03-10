@@ -20,6 +20,22 @@ db.init_app(app)
 
 @app.route('/', methods=['GET'])
 def home():
+    """
+    Renders the library home page with support for searching and sorting.
+
+    Retrieves query parameters from the request URL to filter and sort the
+    collection of books stored in the database.
+
+    Args:
+        q (str, optional): The search string to filter books by title (case-insensitive).
+            Defaults to an empty string.
+        sort (str, optional): The criteria to sort the books by ('title' or 'author').
+            Defaults to 'title'.
+
+    Returns:
+        str: The rendered 'home.html' template containing the processed book list
+             and the current sorting state.
+    """
     search_query = request.args.get('q', '')
     sort_by = request.args.get('sort', 'title')
 
@@ -40,6 +56,18 @@ def home():
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
+    """
+    Handles the creation of a new author entry in the library database.
+
+    Supports both GET to display the creation form and POST to process
+    the submitted author data. Validates that the name and birthdate
+    fields are provided and that dates are in the correct ISO format.
+
+    Returns:
+        str: The rendered 'add_author.html' template for GET requests.
+        str, int: A success message and 200 status code for successful POSTs,
+                  or an error message and 400 status code if validation fails.
+    """
     if request.method == 'GET':
         return render_template('add_author.html')
     if request.method == 'POST':
@@ -74,6 +102,20 @@ def add_author():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
+    """
+    Handles the creation of a new book record and its association with an author.
+
+    On GET requests, it retrieves all authors from the database to populate
+    the selection menu in the form. On POST requests, it processes form data,
+    validates inputs using a helper function, ensures the referenced author
+    exists, and saves the new book to the database.
+
+    Returns:
+        str: The rendered 'add_book.html' template with an author list for GET.
+        str, int: A success message and 200 status code upon successful
+                  creation, or error messages and 400/404 status codes
+                  for validation or database failures.
+    """
     if request.method == 'GET':
         authors = db.session.execute(select(Author).order_by(Author.name)).scalars().all()
         return render_template('add_book.html', authors=authors)
@@ -108,6 +150,20 @@ def add_book():
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
+    """
+    Deletes a specific book from the database and performs cleanup of orphaned authors.
+
+    Retrieves a book by its unique ID and deletes it. If the associated author
+    has no remaining books in the library after this deletion, the author record
+    is also removed from the database to maintain data integrity.
+
+    Args:
+        book_id (int): The unique identifier of the book to be deleted.
+
+    Returns:
+        Response: A redirect to the home page with a flash message indicating
+                  the success of the operation.
+    """
     book = db.session.get(Book, book_id)
     if book:
         author = book.author
@@ -127,8 +183,14 @@ def delete_book(book_id):
 
 def init_db():
     """
-    Checks if the required tables exist.
-    If not, it creates all defined models.
+    Initializes the database by creating tables if they do not exist.
+
+    Uses an SQLAlchemy inspector to verify the existence of the 'authors' table.
+    If the table is missing, it triggers the creation of all defined
+    database models via SQLAlchemy's create_all() method.
+
+    Returns:
+        None
     """
     with app.app_context():
         inspector = inspect(db.engine)
@@ -140,5 +202,11 @@ def init_db():
 
 
 if __name__ == "__main__":
+    """
+    Entry point of the application.
+
+    Triggers the database initialization process to ensure all required 
+    tables exist and then starts the Flask development server in debug mode.
+    """
     init_db()
     app.run(debug=True)
