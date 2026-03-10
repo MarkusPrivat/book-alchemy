@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Library</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-{% for book in books %}
-<div><h3>{{ book.title }}</h3>
-</div>
-{% endfor %}
-
+    <h1>Library</h1>
+    <div class="book-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-card-img">
+                <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg" alt="Cover">
+            </div>
+            <div class="book-card-info">
+                <h2>{{ book.title }}</h2>
+                <p>Author: {{ book.author.name }}</p>
+                <p>Year: {{ book.publication_year }}</p>
+                <p>ISBN: {{ book.isbn }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </body>
 </html>

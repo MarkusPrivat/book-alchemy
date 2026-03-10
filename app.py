@@ -19,6 +19,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DATABASE_PATH.as_posix()}"
 db.init_app(app)
 
 
+@app.route('/', methods=['GET'])
+def home():
+    books = db.session.execute(select(Book).order_by(Book.title)).scalars().all()
+    print(books)
+    return render_template('home.html', books=books)
+
+
+
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
     if request.method == 'GET':
