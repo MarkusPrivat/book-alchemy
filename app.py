@@ -4,8 +4,10 @@ from datetime import date
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, select
+from sqlalchemy.exc import IntegrityError
 
 from data.data_models import db, Author, Book
+from data.data_validation import add_book_validate_form_input
 
 
 PROJECT_ROOT = Path(__file__).parent
@@ -55,11 +57,38 @@ def add_author():
 def add_book():
     if request.method == 'GET':
         authors = db.session.execute(select(Author).order_by(Author.name)).scalars().all()
-        return render_template('add_book.html', authors=authors) #TODO: Template erweitern
+        return render_template('add_book.html', authors=authors)
 
     if request.method == 'POST':
-        #TODO: POST Methode umsetzen
-        pass
+        author_id_form = request.form.get('author_id', '')
+        title_form = request.form.get('title').strip()
+        isbn_form = request.form.get('isbn', '').strip()
+        publication_year_form =  request.form.get('publication_year', '')
+
+        errors = add_book_validate_form_input(
+            author_id_form,
+            title_form,
+            isbn_form,
+            publication_year_form)
+
+        if errors:
+            return "<br>".join(errors), 400
+        if not db.session.get(Author, int(author_id_form)):
+            return "Selected author does not exist!", 404
+
+        book = Book(
+            isbn=isbn_form,
+            title=title_form,
+            publication_year=int(publication_year_form),
+            author_id=int(author_id_form)
+        )
+        db.session.add(book)
+        db.session.commit()
+        return f"Book '{title_form}' successfully added!", 200
+
+
+
+
 
 
 def init_db():
