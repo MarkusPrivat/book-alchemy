@@ -209,4 +209,4 @@ if __name__ == "__main__":
     tables exist and then starts the Flask development server in debug mode.
     """
     init_db()
-    app.run(debug=True)
+    app.run(port=5002, debug=True)
