@@ -21,9 +21,17 @@ db.init_app(app)
 
 @app.route('/', methods=['GET'])
 def home():
-    books = db.session.execute(select(Book).order_by(Book.title)).scalars().all()
-    print(books)
-    return render_template('home.html', books=books)
+    sort_by = request.args.get('sort', 'title')
+    if sort_by == 'author':
+        books = db.session.execute(
+            select(Book).join(Author).order_by(Author.name)
+        ).scalars().all()
+    else:
+        books = db.session.execute(
+            select(Book).order_by(Book.title)
+        ).scalars().all()
+
+    return render_template('home.html', books=books, sort_by=sort_by)
 
 
 

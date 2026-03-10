@@ -9,6 +9,12 @@
 </head>
 <body>
     <h1>Library</h1>
+    <form action="/" method="GET" style="margin-bottom: 20px;">
+    <select name="sort" onchange="this.form.submit()">
+        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+        <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Sort by Author</option>
+    </select>
+</form>
     <div class="book-grid">
         {% for book in books %}
         <div class="book-card">
