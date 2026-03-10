@@ -2,9 +2,7 @@ from pathlib import Path
 from datetime import date
 
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, select
-from sqlalchemy.exc import IntegrityError
 
 from data.data_models import db, Author, Book
 from data.data_validation import add_book_validate_form_input
@@ -16,6 +14,7 @@ DATABASE_PATH = PROJECT_ROOT / "data/library.sqlite"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DATABASE_PATH.as_posix()}"
+app.secret_key = "Loremipsum-Secret!"
 db.init_app(app)
 
 
@@ -107,6 +106,21 @@ def add_book():
         return f"Book '{title_form}' successfully added!", 200
 
 
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    book = db.session.get(Book, book_id)
+    if book:
+        author = book.author
+        db.session.delete(book)
+        db.session.commit()
+
+        if len(author.books) == 0:
+            db.session.delete(author)
+            db.session.commit()
+
+        flash(f'Das Buch "{book.title}" wurde gelöscht.', 'success')
+
+    return redirect(url_for('home'))
 
 
 

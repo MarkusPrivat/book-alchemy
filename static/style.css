@@ -19,10 +19,11 @@ h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 30px; }
     padding: 20px;
     border-radius: 18px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    min-height: 350px;
 }
 
 .book-card:hover { transform: translateY(-5px); }
@@ -36,11 +37,13 @@ h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 30px; }
     width: 120px;
     height: auto;
     display: block;
+    margin-bottom: 15px;
 }
 
 .book-card-info {
     width: 100%;
     text-align: left;
+    flex-grow: 1;
 }
 
 .book-card-info h2 {
@@ -52,6 +55,25 @@ h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 30px; }
     margin: 5px 0;
     font-size: 0.9rem;
     color: #86868b;
+}
+
+.book-card-delete {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff3b30;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.delete-btn:hover {
+    transform: scale(1.2);
 }
 
 .form-container {
@@ -154,4 +176,13 @@ select {
     color: #86868b;
     font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.flash-message {
+    padding: 15px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
 }
