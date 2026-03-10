@@ -4,20 +4,30 @@
     <title>Add Author</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <h1>Add New Author</h1>
 
-<form action="/add_author" method="POST">
-    <label for="name">Author Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
+    <div class="form-container">
+        <form action="/add_author" method="POST">
+            <div class="form-group">
+                <label for="name">Author Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
 
-    <label for="birthdate">Birthdate:</label>
-    <input type="date" id="birthdate" name="birthdate" required><br><br>
-    <label for="date_of_death">Date of Death:</label>
-    <input type="date" id="date_of_death" name="date_of_death"><br><br>
-    <input type="submit" value="Add Author">
-</form>
+            <div class="form-group">
+                <label for="birthdate">Birthdate</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
 
+            <div class="form-group">
+                <label for="date_of_death">Date of Death (optional)</label>
+                <input type="date" id="date_of_death" name="date_of_death">
+            </div>
+
+            <button type="submit">Add Author</button>
+        </form>
+    </div>
 </body>
 </html>
