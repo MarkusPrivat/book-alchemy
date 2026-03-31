@@ -3,6 +3,7 @@ from datetime import date
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import inspect, select
+from sqlalchemy.exc import IntegrityError
 
 from data.data_models import db, Author, Book
 from data.data_validation import add_book_validate_form_input
@@ -70,21 +71,22 @@ def add_author():
     """
     if request.method == 'GET':
         return render_template('add_author.html')
+
     if request.method == 'POST':
         name_form = request.form.get('name', '').strip()
         birthdate_form = request.form.get('birthdate', '')
         date_of_death_form = request.form.get('date_of_death', '')
 
-        if not name_form:
-            return "Name cannot be empty!", 400
-        if not birthdate_form:
-            return "Author must have a birthdate!", 400
+        if not name_form or not birthdate_form:
+            flash("Name and birthdate are required!", "error")
+            return redirect(url_for('add_author'))
 
         try:
             birth_date_obj = date.fromisoformat(birthdate_form)
             death_date_obj = None
             if date_of_death_form:
                 death_date_obj = date.fromisoformat(date_of_death_form)
+
             author = Author(
                 name=name_form,
                 birth_date=birth_date_obj,
@@ -94,10 +96,16 @@ def add_author():
             db.session.add(author)
             db.session.commit()
 
-            return f"Author {name_form} successfully added!", 200
+            flash(f"Author '{name_form}' successfully added!", "success")
+            return redirect(url_for('home'))
 
+        except IntegrityError:
+            db.session.rollback()
+            flash(f"Error: An author with the name '{name_form}' already exists.", "error")
+            return redirect(url_for('add_author'))
         except ValueError:
-            return "Invalid date format received. Please use YYYY-MM-DD.", 400
+            flash("Invalid date format. Please use YYYY-MM-DD.", "error")
+            return redirect(url_for('add_author'))
 
 
 @app.route('/add_book', methods=['GET', 'POST'])
@@ -122,20 +130,21 @@ def add_book():
 
     if request.method == 'POST':
         author_id_form = request.form.get('author_id', '')
-        title_form = request.form.get('title').strip()
+        title_form = request.form.get('title', '').strip()
         isbn_form = request.form.get('isbn', '').strip()
-        publication_year_form =  request.form.get('publication_year', '')
+        publication_year_form = request.form.get('publication_year', '')
 
         errors = add_book_validate_form_input(
-            author_id_form,
-            title_form,
-            isbn_form,
-            publication_year_form)
+            author_id_form, title_form, isbn_form, publication_year_form)
 
         if errors:
-            return "<br>".join(errors), 400
+            for error in errors:
+                flash(error, "error")
+            return redirect(url_for('add_book'))
+
         if not db.session.get(Author, int(author_id_form)):
-            return "Selected author does not exist!", 404
+            flash("Selected author does not exist!", "error")
+            return redirect(url_for('add_book'))
 
         book = Book(
             isbn=isbn_form,
@@ -145,7 +154,9 @@ def add_book():
         )
         db.session.add(book)
         db.session.commit()
-        return f"Book '{title_form}' successfully added!", 200
+
+        flash(f"Book '{title_form}' successfully added!", "success")
+        return redirect(url_for('home'))
 
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])

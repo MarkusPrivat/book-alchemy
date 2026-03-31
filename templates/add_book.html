@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Add New Book</h1>
+    <div class="top-nav">
+        <a href="{{ url_for('home') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Library</a>
+    </div>
+    <h1>Add New Book</h1
 
     <div class="form-container">
         <form action="/add_book" method="POST">

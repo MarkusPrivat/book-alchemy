@@ -23,7 +23,7 @@ class Author(db.Model):
     __tablename__ = "authors"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     birth_date: Mapped[date] = mapped_column(Date, nullable=False)
     date_of_death: Mapped[Optional[date]] = mapped_column(Date)
 

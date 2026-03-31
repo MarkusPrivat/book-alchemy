@@ -180,9 +180,57 @@ select {
 
 .flash-message {
     padding: 15px;
-    background-color: #e8f5e9;
-    color: #2e7d32;
     border-radius: 10px;
     margin-bottom: 20px;
     text-align: center;
+    font-weight: 500;
+}
+
+.flash-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.flash-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.main-nav {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #0071e3;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: opacity 0.2s;
+}
+
+.nav-link:hover {
+    opacity: 0.7;
+}
+
+.top-nav {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #86868b;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #1d1d1f;
+}
+
+.back-link i {
+    margin-right: 5px;
 }
